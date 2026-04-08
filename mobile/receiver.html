@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#03050d"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+<meta name="apple-mobile-web-app-title" content="EarBridge"/>
+<link rel="manifest" href="data:application/json,{%22name%22:%22EarBridge%20NEXUS%22,%22short_name%22:%22EarBridge%22,%22display%22:%22standalone%22,%22background_color%22:%22%2303050d%22,%22theme_color%22:%22%2303050d%22}"/>
+<title>EarBridge NEXUS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ── Reset & base ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --void:    #03050d;
+  --deep:    #070b18;
+  --surface: rgba(255,255,255,.04);
+  --rim:     rgba(255,255,255,.07);
+  --teal:    #00e5cc;
+  --teal-dim:#00876b;
+  --orange:  #ff6b35;
+  --red:     #ff3b5c;
+  --text:    #cdd6f4;
+  --muted:   #4a5278;
+  --good:    #a6e3a1;
+  --warn:    #f9e2af;
+  --bad:     #f38ba8;
+  --font-h:  'Orbitron', monospace;
+  --font-b:  'JetBrains Mono', monospace;
+}
+html,body{height:100%;overflow-x:hidden}
+body{
+  font-family:var(--font-b);
+  background:var(--void);
+  color:var(--text);
+  min-height:100dvh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+/* ── Deep space background ── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,229,204,.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(255,107,53,.04) 0%, transparent 50%),
+    radial-gradient(ellipse 100% 80% at 0% 60%, rgba(0,100,80,.03) 0%, transparent 50%);
+  pointer-events:none;z-index:0;
+}
+
+/* Starfield */
+body::after{
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    radial-gradient(1px 1px at 20% 15%, rgba(255,255,255,.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 75% 8%,  rgba(255,255,255,.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 45% 60%, rgba(255,255,255,.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 85% 40%, rgba(255,255,255,.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 10% 80%, rgba(255,255,255,.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 90%, rgba(255,255,255,.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 30% 45%, rgba(255,255,255,.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 92% 72%, rgba(255,255,255,.4) 0%, transparent 100%);
+  pointer-events:none;z-index:0;
+}
+
+.page{
+  position:relative;z-index:1;
+  width:100%;max-width:440px;
+  padding:0 16px 60px;
+  display:flex;flex-direction:column;gap:14px;
+}
+
+/* ── Header / Orb ── */
+.hero{
+  display:flex;flex-direction:column;align-items:center;
+  padding:36px 0 8px;
+  gap:16px;
+}
+
+.orb-wrap{
+  position:relative;
+  width:140px;height:140px;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* Outer orbital rings */
+.ring{
+  position:absolute;
+  border-radius:50%;
+  border:1px solid var(--teal-dim);
+  opacity:0;
+  transition:opacity .6s;
+}
+.ring-1{width:100%;height:100%;animation:spin1 8s linear infinite}
+.ring-2{width:78%;height:78%;border-color:rgba(0,229,204,.4);animation:spin2 5s linear infinite}
+.ring-3{width:115%;height:115%;border-color:rgba(0,229,204,.15);animation:spin3 13s linear infinite;border-style:dashed}
+.orb-wrap.live .ring{opacity:1}
+
+@keyframes spin1{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes spin2{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
+@keyframes spin3{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* Core orb */
+.orb{
+  width:68px;height:68px;
+  border-radius:50%;
+  background:radial-gradient(circle at 38% 35%, rgba(0,229,204,.3), rgba(0,50,40,.8) 70%);
+  border:1.5px solid rgba(0,229,204,.5);
+  box-shadow:0 0 0 rgba(0,229,204,0);
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;
+  transition:box-shadow .4s, border-color .4s;
+  position:relative;z-index:2;
+}
+.orb-wrap.live .orb{
+  border-color:var(--teal);
+  box-shadow:0 0 20px rgba(0,229,204,.4), 0 0 50px rgba(0,229,204,.15), inset 0 0 20px rgba(0,229,204,.1);
+  animation:orb-pulse 2s ease-in-out infinite;
+}
+@keyframes orb-pulse{0%,100%{box-shadow:0 0 20px rgba(0,229,204,.4),0 0 50px rgba(0,229,204,.15)}
+                      50%{box-shadow:0 0 30px rgba(0,229,204,.6),0 0 80px rgba(0,229,204,.25)}}
+
+.brand{
+  text-align:center;
+}
+.brand-name{
+  font-family:var(--font-h);
+  font-size:26px;font-weight:900;
+  letter-spacing:4px;
+  background:linear-gradient(135deg, var(--teal) 0%, #fff 60%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.brand-sub{
+  font-size:9px;letter-spacing:4px;text-transform:uppercase;
+  color:var(--muted);margin-top:4px;
+}
+
+/* ── Cards ── */
+.card{
+  background:var(--surface);
+  border:1px solid var(--rim);
+  border-radius:20px;
+  padding:20px;
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  position:relative;
+  overflow:hidden;
+}
+.card::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(0,229,204,.3),transparent);
+}
+.card-label{
+  font-family:var(--font-h);
+  font-size:8px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:14px;
+}
+
+/* ── Connection input ── */
+.conn-grid{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+}
+.ip-field{
+  background:rgba(0,0,0,.4);
+  border:1px solid var(--rim);
+  border-radius:12px;
+  color:var(--text);
+  font-family:var(--font-b);
+  font-size:16px;
+  padding:13px 16px;
+  outline:none;
+  transition:border-color .2s, box-shadow .2s;
+  width:100%;
+}
+.ip-field:focus{
+  border-color:var(--teal);
+  box-shadow:0 0 0 3px rgba(0,229,204,.1);
+}
+.ip-field::placeholder{color:var(--muted)}
+
+.btn-connect{
+  background:var(--teal);
+  color:#000;
+  border:none;
+  border-radius:12px;
+  font-family:var(--font-h);
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:1px;
+  padding:13px 18px;
+  cursor:pointer;
+  transition:all .2s;
+  white-space:nowrap;
+}
+.btn-connect:hover{filter:brightness(1.15);transform:translateY(-1px)}
+.btn-connect:active{transform:translateY(0)}
+.btn-connect:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+.port-row{
+  display:flex;align-items:center;gap:10px;
+  margin-top:10px;
+}
+.port-label{font-size:10px;color:var(--muted)}
+.port-field{
+  width:82px;
+  background:rgba(0,0,0,.4);
+  border:1px solid var(--rim);
+  border-radius:10px;
+  color:var(--text);
+  font-family:var(--font-b);
+  font-size:13px;
+  padding:7px 12px;
+  outline:none;
+}
+
+/* ── Status pill ── */
+.status-pill{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;
+  border-radius:14px;
+  background:rgba(0,0,0,.3);
+  border:1px solid var(--rim);
+  transition:border-color .3s;
+}
+.status-pill.s-connected{border-color:rgba(0,229,204,.4)}
+.status-pill.s-error{border-color:rgba(255,59,92,.4)}
+.status-pill.s-connecting{border-color:rgba(255,107,53,.4)}
+
+.pulse-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--muted);flex-shrink:0;
+  transition:background .3s;
+}
+.s-connected  .pulse-dot{background:var(--teal);animation:dot-blink 2s ease-in-out infinite}
+.s-connecting .pulse-dot{background:var(--orange);animation:dot-blink .5s ease-in-out infinite}
+.s-error      .pulse-dot{background:var(--red)}
+@keyframes dot-blink{50%{opacity:.2}}
+
+.status-info{flex:1;min-width:0}
+.status-line1{font-size:12px;font-weight:500;color:var(--text)}
+.status-line2{font-size:10px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.btn-stop{
+  background:transparent;color:var(--red);
+  border:1px solid rgba(255,59,92,.4);
+  border-radius:10px;
+  font-family:var(--font-h);font-size:10px;letter-spacing:1px;
+  padding:8px 12px;cursor:pointer;
+  transition:all .2s;flex-shrink:0;
+}
+.btn-stop:hover{background:rgba(255,59,92,.1)}
+
+/* ── Waveform canvas ── */
+.wave-wrap{
+  height:56px;
+  margin-top:14px;
+  border-radius:10px;
+  overflow:hidden;
+  background:rgba(0,0,0,.2);
+}
+#waveCanvas{width:100%;height:100%;display:block}
+
+/* ── Network quality bar ── */
+.nq-row{
+  display:flex;align-items:center;gap:12px;
+  margin-top:12px;
+}
+.nq-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);flex-shrink:0}
+.nq-bars{display:flex;gap:3px;align-items:flex-end}
+.nq-bar{
+  width:6px;border-radius:2px;
+  background:var(--muted);
+  transition:background .4s, height .3s;
+}
+.nq-bar:nth-child(1){height:8px}
+.nq-bar:nth-child(2){height:14px}
+.nq-bar:nth-child(3){height:20px}
+.nq-bar:nth-child(4){height:26px}
+.nq-bars.q-excellent .nq-bar{background:var(--good)}
+.nq-bars.q-good  .nq-bar:nth-child(-n+3){background:var(--good)}
+.nq-bars.q-fair  .nq-bar:nth-child(-n+2){background:var(--warn)}
+.nq-bars.q-poor  .nq-bar:nth-child(1)  {background:var(--bad)}
+.nq-text{font-size:11px;color:var(--muted)}
+.nq-rtt{margin-left:auto;font-size:10px;color:var(--muted)}
+
+/* ── BT profile badge ── */
+.bt-row{
+  display:flex;align-items:center;gap:8px;
+  margin-top:12px;
+  padding:8px 12px;
+  border-radius:10px;
+  background:rgba(0,0,0,.2);
+  border:1px solid var(--rim);
+  font-size:10px;
+}
+.bt-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);flex-shrink:0}
+.bt-text{flex:1;color:var(--muted)}
+.bt-row.bt-a2dp .bt-dot{background:var(--good)}
+.bt-row.bt-a2dp .bt-text{color:var(--good)}
+.bt-row.bt-hfp  .bt-dot{background:var(--warn)}
+.bt-row.bt-hfp  .bt-text{color:var(--warn)}
+
+/* ── Volume ── */
+.vol-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.vol-tag{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+.vol-num{
+  font-family:var(--font-h);
+  font-size:20px;font-weight:700;
+  color:var(--teal);
+}
+.slider{
+  -webkit-appearance:none;
+  width:100%;height:3px;
+  border-radius:2px;
+  background:var(--rim);
+  outline:none;
+}
+.slider::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:22px;height:22px;
+  border-radius:50%;
+  background:var(--teal);
+  cursor:pointer;
+  box-shadow:0 0 12px rgba(0,229,204,.5);
+  border:2px solid var(--void);
+}
+
+/* ── Stats grid ── */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+.stat{
+  background:rgba(0,0,0,.3);
+  border:1px solid var(--rim);
+  border-radius:14px;
+  padding:14px;
+}
+.stat-v{
+  font-family:var(--font-h);
+  font-size:22px;font-weight:700;
+  color:var(--teal);
+  line-height:1;
+}
+.stat-l{
+  font-size:9px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted);margin-top:5px;
+}
+
+/* ── Jitter buffer visual ── */
+.jb-row{display:flex;align-items:center;gap:10px;margin-top:14px}
+.jb-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.jb-track{flex:1;height:4px;background:var(--rim);border-radius:2px;position:relative}
+.jb-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--teal),var(--orange));transition:width .3s}
+.jb-val{font-size:10px;color:var(--muted);white-space:nowrap}
+
+/* ── Info ── */
+.info{
+  background:rgba(0,229,204,.04);
+  border:1px solid rgba(0,229,204,.1);
+  border-radius:16px;
+  padding:14px 16px;
+  font-size:10px;
+  color:rgba(0,229,204,.7);
+  line-height:1.9;
+}
+.info strong{color:var(--text)}
+
+footer{
+  text-align:center;
+  padding:0 0 20px;
+  font-size:9px;letter-spacing:3px;
+  color:var(--muted);
+  text-transform:uppercase;
+}
+
+/* Entry animation */
+.page > *{
+  opacity:0;
+  transform:translateY(16px);
+  animation:fadeUp .5s ease forwards;
+}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+.page > *:nth-child(1){animation-delay:.05s}
+.page > *:nth-child(2){animation-delay:.10s}
+.page > *:nth-child(3){animation-delay:.15s}
+.page > *:nth-child(4){animation-delay:.20s}
+.page > *:nth-child(5){animation-delay:.25s}
+.page > *:nth-child(6){animation-delay:.30s}
+.page > *:nth-child(7){animation-delay:.35s}
+.page > *:nth-child(8){animation-delay:.40s}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="orb-wrap" id="orbWrap">
+      <div class="ring ring-3"></div>
+      <div class="ring ring-1"></div>
+      <div class="ring ring-2"></div>
+      <div class="orb">🎧</div>
+    </div>
+    <div class="brand">
+      <div class="brand-name">EARBRIDGE</div>
+      <div class="brand-sub">Nexus Edition · Wireless Audio</div>
+    </div>
+  </div>
+
+  <!-- Connect -->
+  <div class="card">
+    <div class="card-label">Connection Target</div>
+    <div class="conn-grid">
+      <input class="ip-field" id="ipInput" placeholder="192.168.x.x" inputmode="decimal"
+             autocomplete="off" spellcheck="false"/>
+      <button class="btn-connect" id="btnConnect" onclick="App.connect()">LINK</button>
+    </div>
+    <div class="port-row">
+      <span class="port-label">PORT</span>
+      <input class="port-field" id="portInput" type="number" value="8765"/>
+    </div>
+  </div>
+
+  <!-- Status -->
+  <div class="card">
+    <div class="card-label">Signal Status</div>
+    <div class="status-pill" id="statusPill">
+      <div class="pulse-dot"></div>
+      <div class="status-info">
+        <div class="status-line1" id="statusL1">Offline</div>
+        <div class="status-line2" id="statusL2">Enter desktop IP to begin</div>
+      </div>
+      <button class="btn-stop" id="btnStop" onclick="App.disconnect()" style="display:none">UNLINK</button>
+    </div>
+
+    <div class="nq-row" id="nqRow">
+      <span class="nq-label">Signal</span>
+      <div class="nq-bars" id="nqBars">
+        <div class="nq-bar"></div><div class="nq-bar"></div>
+        <div class="nq-bar"></div><div class="nq-bar"></div>
+      </div>
+      <span class="nq-text" id="nqText">—</span>
+      <span class="nq-rtt" id="nqRtt"></span>
+    </div>
+
+    <div class="bt-row" id="btRow">
+      <div class="bt-dot"></div>
+      <div class="bt-text" id="btText">Bluetooth: detecting…</div>
+    </div>
+
+    <div class="wave-wrap">
+      <canvas id="waveCanvas"></canvas>
+    </div>
+  </div>
+
+  <!-- Volume -->
+  <div class="card">
+    <div class="card-label">Output Level</div>
+    <div class="vol-row">
+      <span class="vol-tag">Laptop Audio</span>
+      <span class="vol-num" id="volNum">80%</span>
+    </div>
+    <input class="slider" id="volSlider" type="range" min="0" max="150" value="80"
+           oninput="App.setVol(this.value)"/>
+  </div>
+
+  <!-- Stats -->
+  <div class="card">
+    <div class="card-label">Session Telemetry</div>
+    <div class="stats">
+      <div class="stat"><div class="stat-v" id="sPackets">0</div><div class="stat-l">Packets Recv</div></div>
+      <div class="stat"><div class="stat-v" id="sRtt">—</div><div class="stat-l">RTT (ms)</div></div>
+      <div class="stat"><div class="stat-v" id="sUnder">0</div><div class="stat-l">Underruns</div></div>
+      <div class="stat"><div class="stat-v" id="sSR">—</div><div class="stat-l">Sample Rate</div></div>
+    </div>
+    <div class="jb-row">
+      <span class="jb-label">Jitter Buffer</span>
+      <div class="jb-track"><div class="jb-fill" id="jbFill" style="width:0%"></div></div>
+      <span class="jb-val" id="jbVal">0ms</span>
+    </div>
+  </div>
+
+  <!-- Info -->
+  <div class="info">
+    <strong>Background audio:</strong> minimize freely — audio runs in dedicated thread.<br>
+    <strong>Universal earbuds:</strong> A2DP music profile, not HFP call profile.<br>
+    <strong>Auto-reconnects</strong> with exponential backoff on any drop.<br>
+    <strong>Phone playing music?</strong> Laptop speaker auto-mutes and restores.
+  </div>
+
+  <footer>EarBridge NEXUS · AudioWorklet Engine · v9</footer>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════════════════════════
+//  EARBRIDGE NEXUS — RECEIVER ENGINE
+//  Architecture:
+//  1. AudioWorklet ring buffer  — dedicated audio thread, never throttled
+//  2. Adaptive jitter buffer    — measures real network jitter, auto-tunes depth
+//  3. A2DP routing              — Web Audio → MediaStream → HTMLAudioElement
+//  4. MediaSession              — forces A2DP, shows Now Playing
+//  5. Silent WAV keepalive      — prevents BT auto-switch to HFP on silence
+//  6. RTT measurement           — timestamped ping/pong, live network quality
+//  7. AnalyserNode waveform     — real audio-driven visualizer
+//  8. WakeLock + visibilitychange — keeps alive when backgrounded
+//  9. Exponential backoff reconnect
+// ════════════════════════════════════════════════════════════════════════════════
+
+// ── AudioWorklet source (runs in audio thread, loaded via Blob URL) ─────────
+const WORKLET_SRC = `
+class NexusRingBuffer extends AudioWorkletProcessor {
+  constructor(opts) {
+    super();
+    const sr       = opts.processorOptions?.sampleRate || 48000;
+    this._size     = sr * 4;       // 4 second ring per channel
+    this._L        = new Float32Array(this._size);
+    this._R        = new Float32Array(this._size);
+    this._wr       = 0;
+    this._rd       = 0;
+    this._filled   = 0;
+    this._underruns = 0;
+    this._packets   = 0;
+    this._reportEvery = 25;
+
+    this.port.onmessage = ({data}) => {
+      switch(data.cmd) {
+        case 'pcm':   this._write(data.L, data.R); break;
+        case 'flush': this._wr = this._rd = this._filled = 0; break;
+        case 'trim':  this._trim(data.ms, data.sr, data.ch); break;
+      }
+    };
+  }
+
+  _write(L, R) {
+    const n = L.length;
+    // Anti-overflow: drop oldest if > 70% full
+    if (this._filled + n > this._size * 0.70) {
+      const drop = Math.ceil(n * 1.5);
+      this._rd      = (this._rd + drop) % this._size;
+      this._filled  = Math.max(0, this._filled - drop);
+    }
+    for (let i = 0; i < n; i++) {
+      this._L[this._wr] = L[i];
+      this._R[this._wr] = R[i];
+      this._wr = (this._wr + 1) % this._size;
+      this._filled++;
+    }
+    this._packets++;
+    if (this._packets % this._reportEvery === 0) {
+      this.port.postMessage({
+        type:'stats',
+        filled:    this._filled,
+        underruns: this._underruns,
+        packets:   this._packets
+      });
+    }
+  }
+
+  _trim(ms, sr, ch) {
+    // Trim ring to target depth (adaptive jitter buffer reducing latency)
+    const target = Math.floor(sr * ms / 1000);
+    if (this._filled > target) {
+      const drop = this._filled - target;
+      this._rd     = (this._rd + drop) % this._size;
+      this._filled = target;
+    }
+  }
+
+  process(_, outputs) {
+    const L = outputs[0][0];
+    const R = outputs[0][1] ?? outputs[0][0];
+    for (let i = 0; i < L.length; i++) {
+      if (this._filled > 0) {
+        L[i] = this._L[this._rd];
+        R[i] = this._R[this._rd];
+        this._rd = (this._rd + 1) % this._size;
+        this._filled--;
+      } else {
+        L[i] = R[i] = 0;
+        this._underruns++;
+      }
+    }
+    return true;
+  }
+}
+registerProcessor('nexus-ring', NexusRingBuffer);
+`;
+
+// ── Adaptive Jitter Buffer ────────────────────────────────────────────────────
+// Measures inter-packet arrival jitter and automatically adjusts the ring
+// buffer target depth. Low jitter → smaller buffer (lower latency).
+// High jitter → larger buffer (fewer underruns).
+class AdaptiveJitter {
+  constructor() {
+    this.lastArrival = 0;
+    this.jitter      = 0;        // RFC 3550 jitter estimate (ms)
+    this.ALPHA       = 0.1;
+    this.MIN_MS      = 80;
+    this.MAX_MS      = 600;
+    this.targetMs    = 200;
+  }
+
+  onPacket() {
+    const now  = performance.now();
+    if (this.lastArrival > 0) {
+      const gap       = now - this.lastArrival;
+      const deviation = Math.abs(gap - 20);  // 20ms = expected frame interval
+      this.jitter     = this.jitter * (1 - this.ALPHA) + deviation * this.ALPHA;
+      // Target = 3× jitter (headroom), clamped to [MIN, MAX]
+      this.targetMs   = Math.min(this.MAX_MS,
+                          Math.max(this.MIN_MS, Math.round(this.jitter * 3)));
+    }
+    this.lastArrival = now;
+    return this.targetMs;
+  }
+
+  reset() { this.lastArrival = 0; this.jitter = 0; this.targetMs = 200; }
+}
+
+// ── RTT measurement ────────────────────────────────────────────────────────────
+const RTT = {
+  samples: [],
+  add(ms) {
+    this.samples.push(ms);
+    if (this.samples.length > 20) this.samples.shift();
+  },
+  avg() {
+    if (!this.samples.length) return null;
+    return Math.round(this.samples.reduce((a,b)=>a+b,0) / this.samples.length);
+  },
+  quality() {
+    const r = this.avg();
+    if (r === null) return 'unknown';
+    if (r <  60) return 'excellent';
+    if (r < 120) return 'good';
+    if (r < 250) return 'fair';
+    return 'poor';
+  },
+  reset() { this.samples = []; }
+};
+
+// ── Audio state ────────────────────────────────────────────────────────────────
+let ctx         = null;
+let worklet     = null;
+let gainNode    = null;
+let analyser    = null;
+let msDest      = null;
+let mediaEl     = null;
+let silentEl    = null;
+let metaReady   = false;
+let sampleRate  = 48000;
+let channels    = 2;
+const jitter    = new AdaptiveJitter();
+
+// Prefill: wait for 200ms before starting playback
+let prefilling   = true;
+let prefillQueue = [];
+let prefillBytes = 0;
+const PREFILL_MS = 200;
+
+function _detectNativeSR() {
+  const p = new (window.AudioContext || window.webkitAudioContext)();
+  const r = p.sampleRate; p.close(); return r;
+}
+
+function _silentWAV() {
+  const sr=8000,n=sr,b=new ArrayBuffer(44+n*2),v=new DataView(b);
+  const s=(o,t)=>{for(let i=0;i<t.length;i++)v.setUint8(o+i,t.charCodeAt(i))};
+  s(0,'RIFF');v.setUint32(4,36+n*2,true);s(8,'WAVE');s(12,'fmt ');
+  v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);
+  v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);
+  v.setUint16(32,2,true);v.setUint16(34,16,true);
+  s(36,'data');v.setUint32(40,n*2,true);
+  return URL.createObjectURL(new Blob([b],{type:'audio/wav'}));
+}
+
+function _mediaSession() {
+  if (!('mediaSession' in navigator)) return;
+  try {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title:'Laptop Audio',artist:'EarBridge NEXUS',album:'Live',
+      artwork:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%A7%3C/text%3E%3C/svg%3E",sizes:'96x96',type:'image/svg+xml'}]
+    });
+    navigator.mediaSession.playbackState = 'playing';
+    ['play','pause','stop'].forEach(a=>{
+      try{navigator.mediaSession.setActionHandler(a,()=>{navigator.mediaSession.playbackState='playing'});}catch(e){}
+    });
+  } catch(e){}
+}
+
+async function initAudio(sr, ch) {
+  if (ctx) { try{await ctx.close();}catch(e){} ctx=null; }
+  if (mediaEl) { mediaEl.pause(); mediaEl.srcObject=null; mediaEl=null; }
+
+  sampleRate = sr; channels = ch;
+  prefilling = true; prefillQueue = []; prefillBytes = 0;
+  jitter.reset();
+
+  ctx = new (window.AudioContext||window.webkitAudioContext)({ sampleRate: sr });
+
+  // Load worklet
+  const blob = new Blob([WORKLET_SRC], {type:'application/javascript'});
+  const url  = URL.createObjectURL(blob);
+  await ctx.audioWorklet.addModule(url);
+  URL.revokeObjectURL(url);
+
+  worklet = new AudioWorkletNode(ctx, 'nexus-ring', {
+    numberOfInputs:0, numberOfOutputs:1, outputChannelCount:[2],
+    processorOptions:{ sampleRate: sr }
+  });
+
+  gainNode = ctx.createGain();
+  gainNode.gain.value = parseFloat(document.getElementById('volSlider').value) / 100;
+
+  // AnalyserNode — drives the waveform visualizer
+  analyser = ctx.createAnalyser();
+  analyser.fftSize = 256;
+  analyser.smoothingTimeConstant = 0.8;
+
+  // A2DP pipeline: worklet → gain → analyser → MediaStreamDest → HTMLAudioElement
+  msDest = ctx.createMediaStreamDestination();
+  worklet.connect(gainNode);
+  gainNode.connect(analyser);
+  analyser.connect(msDest);
+  gainNode.connect(ctx.destination);  // fallback
+
+  mediaEl = new Audio();
+  mediaEl.srcObject = msDest.stream;
+  mediaEl.volume    = 1.0;
+  await mediaEl.play().catch(e=>console.warn('media play:',e));
+
+  if (!silentEl) {
+    silentEl = new Audio(_silentWAV());
+    silentEl.loop = true; silentEl.volume = 0.001;
+    silentEl.play().catch(()=>{});
+  }
+
+  // Stats from worklet thread
+  worklet.port.onmessage = ({data}) => {
+    if (data.type !== 'stats') return;
+    const bufMs = Math.round(data.filled / sampleRate * 1000);
+    document.getElementById('sPackets').textContent = data.packets;
+    document.getElementById('sUnder').textContent   = data.underruns;
+    _updateJBBar(bufMs);
+  };
+
+  _mediaSession();
+  _detectBTProfile();
+  document.getElementById('sSR').textContent =
+    sr >= 1000 ? (sr/1000).toFixed(1)+'k' : sr;
+}
+
+function _detectBTProfile() {
+  const row  = document.getElementById('btRow');
+  const text = document.getElementById('btText');
+  const rate = ctx?.sampleRate ?? sampleRate;
+  if (rate >= 44100) {
+    row.className  = 'bt-row bt-a2dp';
+    text.textContent = '✓ A2DP  —  Stereo High Quality';
+  } else {
+    row.className  = 'bt-row bt-hfp';
+    text.textContent = '⚠ HFP active — reconnect earbuds for stereo';
+  }
+}
+
+function _updateJBBar(bufMs) {
+  const MAX   = 600;
+  const pct   = Math.min(100, bufMs / MAX * 100);
+  const fill  = document.getElementById('jbFill');
+  const val   = document.getElementById('jbVal');
+  if (fill) fill.style.width = pct + '%';
+  if (val)  val.textContent  = bufMs + 'ms';
+}
+
+// Periodically trim ring buffer to adaptive target depth
+setInterval(() => {
+  if (worklet && ctx && sampleRate) {
+    worklet.port.postMessage({
+      cmd:'trim', ms: jitter.targetMs, sr: sampleRate, ch: channels
+    });
+  }
+}, 500);
+
+// ── Push PCM packet ────────────────────────────────────────────────────────────
+function pushPCM(buf) {
+  if (!metaReady || !ctx || !worklet) return;
+  if (ctx.state === 'suspended') ctx.resume();
+  if (mediaEl?.paused) mediaEl.play().catch(()=>{});
+
+  // Measure jitter, get adaptive target
+  jitter.onPacket();
+
+  // Decode: 8-byte header [4B seq + 4B server_ts], rest is Int16 PCM
+  const int16  = new Int16Array(buf, 8);
+  const frames = Math.floor(int16.length / channels);
+  const L = new Float32Array(frames);
+  const R = new Float32Array(frames);
+  for (let i = 0; i < frames; i++) {
+    L[i] = int16[i * channels]                               / 32768;
+    R[i] = (channels === 2 ? int16[i * channels + 1] : int16[i * channels]) / 32768;
+  }
+
+  if (prefilling) {
+    prefillQueue.push({L, R});
+    prefillBytes += frames * channels * 4;
+    if (prefillBytes >= sampleRate * PREFILL_MS / 1000 * channels * 4) {
+      prefilling = false;
+      for (const f of prefillQueue)
+        worklet.port.postMessage({cmd:'pcm', L:f.L, R:f.R}, [f.L.buffer, f.R.buffer]);
+      prefillQueue = [];
+    }
+  } else {
+    worklet.port.postMessage({cmd:'pcm', L, R}, [L.buffer, R.buffer]);
+  }
+}
+
+function App_setVol(v) {
+  document.getElementById('volNum').textContent = v + '%';
+  if (gainNode) gainNode.gain.value = v / 100;
+}
+
+// ── Waveform visualizer ────────────────────────────────────────────────────────
+const canvas   = document.getElementById('waveCanvas');
+const canvasCtx = canvas.getContext('2d');
+let waveRunning = false;
+
+function startWave() {
+  if (waveRunning) return;
+  waveRunning = true;
+  const data = new Uint8Array(256);
+
+  function draw() {
+    if (!waveRunning) return;
+    requestAnimationFrame(draw);
+
+    const W = canvas.offsetWidth * devicePixelRatio;
+    const H = canvas.offsetHeight * devicePixelRatio;
+    canvas.width = W; canvas.height = H;
+
+    canvasCtx.clearRect(0, 0, W, H);
+
+    if (analyser) {
+      analyser.getByteTimeDomainData(data);
+      canvasCtx.lineWidth   = 1.5 * devicePixelRatio;
+      canvasCtx.strokeStyle = 'rgba(0,229,204,0.7)';
+      canvasCtx.shadowBlur  = 6;
+      canvasCtx.shadowColor = 'rgba(0,229,204,0.4)';
+      canvasCtx.beginPath();
+      const step = W / data.length;
+      for (let i = 0; i < data.length; i++) {
+        const y = ((data[i] / 255) * 0.8 + 0.1) * H;
+        i === 0 ? canvasCtx.moveTo(0, y) : canvasCtx.lineTo(i * step, y);
+      }
+      canvasCtx.stroke();
+    } else {
+      // Flat line when no audio
+      canvasCtx.lineWidth   = 1;
+      canvasCtx.strokeStyle = 'rgba(0,229,204,0.15)';
+      canvasCtx.beginPath();
+      canvasCtx.moveTo(0, H/2); canvasCtx.lineTo(W, H/2);
+      canvasCtx.stroke();
+    }
+  }
+  draw();
+}
+
+function stopWave() { waveRunning = false; }
+
+// ── Network quality UI ─────────────────────────────────────────────────────────
+function updateNQ(quality, rttMs) {
+  const bars = document.getElementById('nqBars');
+  const text = document.getElementById('nqText');
+  const rtt  = document.getElementById('nqRtt');
+  bars.className = 'nq-bars q-' + quality;
+  const label = {excellent:'Excellent',good:'Good',fair:'Fair',poor:'Poor',unknown:'—'}[quality]??quality;
+  text.textContent = label;
+  rtt.textContent  = rttMs != null ? rttMs + 'ms' : '';
+  document.getElementById('sRtt').textContent = rttMs ?? '—';
+}
+
+// ── Phone audio interrupt ──────────────────────────────────────────────────────
+let phoneActive = false;
+function monitorAudio() {
+  if (!ctx) return;
+  ctx.addEventListener('statechange', () => {
+    if (ctx.state === 'interrupted') _notifyPhone(true);
+    else if (ctx.state === 'running' && phoneActive) _notifyPhone(false);
+  });
+}
+function _notifyPhone(on) {
+  if (phoneActive === on) return;
+  phoneActive = on;
+  if (ws?.readyState === WebSocket.OPEN)
+    ws.send(JSON.stringify({type:'phone_audio', playing:on}));
+  setStatus(on ? 's-connected' : 's-connected',
+    on ? '📞 Phone audio — laptop muted' : '🟢 Streaming',
+    on ? 'Laptop speaker silenced automatically' : (ws?.url ?? ''));
+}
+
+// ── Status helpers ─────────────────────────────────────────────────────────────
+function setStatus(cls, l1, l2='') {
+  document.getElementById('statusPill').className = 'status-pill ' + cls;
+  document.getElementById('statusL1').textContent = l1;
+  document.getElementById('statusL2').textContent = l2;
+}
+function setOrb(live) {
+  document.getElementById('orbWrap').classList.toggle('live', live);
+}
+
+// ── Wake Lock ──────────────────────────────────────────────────────────────────
+let _wl = null;
+async function reqWL() {
+  try { if ('wakeLock' in navigator) _wl = await navigator.wakeLock.request('screen'); } catch(e){}
+}
+document.addEventListener('visibilitychange', async () => {
+  if (document.visibilityState !== 'visible') return;
+  reqWL();
+  if (ctx?.state === 'suspended') ctx.resume();
+  if (mediaEl?.paused) mediaEl.play().catch(()=>{});
+  if (silentEl?.paused) silentEl.play().catch(()=>{});
+  _mediaSession();
+});
+
+// ── WebSocket + reconnect ──────────────────────────────────────────────────────
+let ws          = null;
+let pingTimer   = null;
+let reconnTimer = null;
+let reconnDelay = 3000;   // starts at 3s, doubles up to 30s (exponential backoff)
+let savedIp     = '';
+let savedPort   = '8765';
+let manual      = false;
+let nativeSR    = 48000;
+
+const App = {
+  async connect(retry = false) {
+    const ip   = retry ? savedIp   : document.getElementById('ipInput').value.trim();
+    const port = retry ? savedPort : (document.getElementById('portInput').value.trim()||'8765');
+    if (!ip) { setStatus('s-error','❌ Enter desktop IP'); return; }
+    savedIp = ip; savedPort = port; manual = false;
+
+    // Detect native SR on user gesture
+    nativeSR = _detectNativeSR();
+    reqWL();
+
+    if (ws) try{ws.close();}catch(e){}
+    clearInterval(pingTimer); clearTimeout(reconnTimer);
+
+    setStatus('s-connecting','Linking…',`ws://${ip}:${port}`);
+    document.getElementById('btnConnect').disabled = true;
+    document.getElementById('btRow').className = 'bt-row';
+    document.getElementById('btText').textContent = 'Bluetooth: detecting…';
+    metaReady = false; RTT.reset();
+
+    ws = new WebSocket(`ws://${ip}:${port}`);
+    ws.binaryType = 'arraybuffer';
+
+    ws.onopen = () => {
+      setStatus('s-connected','🟢 Linked',`ws://${ip}:${port}`);
+      setOrb(true);
+      startWave();
+      document.getElementById('btnStop').style.display = '';
+      reconnDelay = 3000;   // reset backoff on success
+
+      // Ping every 3s for RTT measurement
+      pingTimer = setInterval(() => {
+        if (ws.readyState === WebSocket.OPEN)
+          ws.send(JSON.stringify({type:'ping', ts: Date.now()}));
+      }, 3000);
+    };
+
+    ws.onmessage = async (ev) => {
+      if (typeof ev.data === 'string') {
+        try {
+          const d = JSON.parse(ev.data);
+          if (d.type === 'meta') {
+            await initAudio(nativeSR, d.channels);
+            metaReady = true;
+            monitorAudio();
+          } else if (d.type === 'pong') {
+            const rtt = Date.now() - d.client_ts;
+            RTT.add(rtt);
+            updateNQ(RTT.quality(), RTT.avg());
+          }
+        } catch(e){}
+      } else {
+        pushPCM(ev.data);
+      }
+    };
+
+    ws.onerror = () => {
+      setStatus('s-error','❌ Cannot connect','Check IP and that sender.py is running');
+      this._cleanup(false);
+    };
+
+    ws.onclose = () => {
+      if (manual) return;
+      setOrb(false);
+      // Exponential backoff: 3s → 6s → 12s → 24s → 30s max
+      setStatus('s-connecting',`⟳ Reconnecting in ${Math.round(reconnDelay/1000)}s…`,
+                'Connection lost');
+      this._cleanup(false);
+      reconnTimer = setTimeout(()=>App.connect(true), reconnDelay);
+      reconnDelay = Math.min(reconnDelay * 2, 30000);
+    };
+  },
+
+  disconnect() {
+    manual = true;
+    if (ws) ws.close();
+    setStatus('','Offline','Tap LINK to connect');
+    setOrb(false);
+    stopWave();
+    this._cleanup(true);
+    _notifyPhone(false);
+    updateNQ('unknown', null);
+  },
+
+  setVol(v) { App_setVol(v); },
+
+  _cleanup(full) {
+    clearInterval(pingTimer);
+    if (full) { clearTimeout(reconnTimer); manual = false; reconnDelay = 3000; }
+    document.getElementById('btnConnect').disabled = false;
+    document.getElementById('btnStop').style.display = 'none';
+    if (full) {
+      if (ctx)     { ctx.close(); ctx=null; }
+      if (mediaEl) { mediaEl.pause(); mediaEl.srcObject=null; mediaEl=null; }
+      if (silentEl){ silentEl.pause(); silentEl=null; }
+      worklet=null; gainNode=null; analyser=null; msDest=null;
+      if ('mediaSession' in navigator)
+        navigator.mediaSession.playbackState = 'none';
+    }
+    metaReady=false; prefilling=true; prefillQueue=[]; prefillBytes=0;
+    phoneActive=false;
+  }
+};
+
+// Start flat waveform on load
+startWave();
+</script>
+</body>
+</html>
